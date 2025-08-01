@@ -1,0 +1,562 @@
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Inter', sans-serif;
+    background: linear-gradient(to right, #1b2735, #0f2027);
+    color: #e0f7fa;
+    margin: 0;
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+/* Container with glass effect */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 2rem;
+    background: rgba(0, 60, 90, 0.3);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+/* Navigation Links */
+.nav-links {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.nav-links a {
+    color: #81d4fa;
+    text-decoration: none;
+    margin: 0 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    background: rgba(129, 212, 250, 0.2);
+}
+
+/* Headings */
+h1 {
+    text-align: center;
+    color: #81d4fa;
+    margin-bottom: 2rem;
+    font-size: 2.8rem;
+}
+
+h2 {
+    color: #00e5ff;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+h3 {
+    color: #81d4fa;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+/* Form Elements */
+input,
+select,
+button {
+    padding: 0.7rem;
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    transition: 0.3s;
+}
+
+input,
+select {
+    background: #252a34;
+    color: #eee;
+    width: 100%;
+    max-width: 300px;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    background-color: #2f3542;
+}
+
+button {
+    background: linear-gradient(to right, #00c9ff, #92fe9d);
+    color: #003;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0.7rem 1.5rem;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+button.active {
+    background: #00aaff;
+    color: white;
+}
+
+/* Controls Section */
+#controls {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#controls label {
+    margin-right: 10px;
+    color: #e0f7fa;
+}
+
+#controls select,
+#controls button {
+    margin: 0 5px;
+}
+
+/* Price Section */
+.price-section {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.coin {
+    background-color: #111;
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00000080;
+}
+
+.coin span {
+    font-weight: bold;
+    font-size: 24px;
+    display: block;
+}
+
+/* Button Groups */
+.time-buttons,
+.coin-buttons {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.time-buttons button,
+.coin-buttons button {
+    background-color: #222;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.time-buttons button.active,
+.coin-buttons button.active {
+    background-color: #00e1ff;
+    color: black;
+}
+
+/* Wallet Section */
+.wallet-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 30px;
+    align-items: center;
+}
+
+.wallet-section input,
+.wallet-section select {
+    width: 280px;
+    padding: 12px 16px;
+    border-radius: 12px;
+}
+
+.wallet-section button {
+    background: linear-gradient(135deg, #00ffc6, #00b894);
+    color: #000;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-weight: 600;
+}
+
+/* Tabs Navigation */
+.tabs {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.tabs button {
+    background: #1e272e;
+    color: #fff;
+    padding: 12px 24px;
+    margin: 0 10px;
+    border-radius: 10px;
+    border: 1px solid #555;
+    transition: all 0.2s ease;
+}
+
+.tabs button:hover,
+.tabs button.active {
+    background: #00ffc6;
+    color: #000;
+    font-weight: bold;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 1rem;
+}
+
+th,
+td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #4dd0e1;
+}
+
+th {
+    background-color: #333;
+    color: #00ffe0;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Chart Container */
+#chart-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: auto;
+    background: #1e1e1e;
+    padding: 1rem;
+    border-radius: 16px;
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+}
+
+/* Charts */
+canvas {
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    background-color: transparent;
+    border-radius: 16px;
+}
+
+/* Sections */
+.section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(0, 40, 60, 0.2);
+    border-radius: 10px;
+    border-left: 4px solid #00e5ff;
+}
+
+.wallet-info,
+.transactions,
+.chart-container {
+    margin-top: 2rem;
+}
+
+/* Status Messages */
+.error {
+    color: #ff6b6b;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.loading {
+    color: #00aaff;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.stream-status {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 0.9rem;
+}
+
+.stream-connected {
+    color: #4caf50;
+}
+
+.stream-disconnected {
+    color: #ff6b6b;
+}
+
+/* Recommendations */
+.recommendation {
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.market-context {
+    background-color: rgba(33, 150, 243, 0.2);
+    border: 1px solid rgba(33, 150, 243, 0.3);
+    color: #e0f7fa;
+}
+
+.buy {
+    background-color: rgba(76, 175, 80, 0.3);
+    color: #00e676;
+}
+
+.sell {
+    background-color: rgba(244, 67, 54, 0.3);
+    color: #ff1744;
+}
+
+.hold {
+    background-color: rgba(255, 235, 59, 0.3);
+    color: #ffeb3b;
+}
+
+/* Feature Lists */
+.feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(77, 208, 225, 0.2);
+}
+
+.feature-list li:before {
+    content: "✓";
+    color: #00e676;
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+/* Tech Stack */
+.tech-stack {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.tech-item {
+    background: rgba(33, 150, 243, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.tech-item h4 {
+    color: #81d4fa;
+    margin: 0 0 0.5rem 0;
+}
+
+.tech-item p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Disclaimer */
+.disclaimer {
+    background: rgba(255, 152, 0, 0.1);
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 2rem;
+}
+
+.disclaimer h3 {
+    color: #ff9800;
+    margin-top: 0;
+}
+
+/* GitHub Link */
+.github-link {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.github-link a {
+    color: #81d4fa;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid #81d4fa;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.github-link a:hover {
+    background: rgba(129, 212, 250, 0.2);
+}
+
+/* Animations */
+.new-transaction {
+    animation: highlight 2s ease-in-out;
+}
+
+@keyframes highlight {
+    0% {
+        background-color: rgba(76, 175, 80, 0.3);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+.transaction-row {
+    transition: all 0.3s ease;
+}
+
+.transaction-row:hover {
+    background-color: rgba(77, 208, 225, 0.1);
+}
+
+/* Tab Content */
+.tab {
+    display: none;
+}
+
+.tab.active {
+    display: block;
+}
+
+/* ETH Balance */
+#eth {
+    color: #00ffc6;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    .container {
+        padding: 1.5rem;
+    }
+
+    .wallet-section {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .wallet-section input,
+    .wallet-section select {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+
+    .tabs button {
+        margin: 5px 5px;
+        padding: 10px 16px;
+    }
+
+    .nav-links a {
+        margin: 0 0.5rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .tech-stack {
+        grid-template-columns: 1fr;
+    }
+
+    #controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #controls select,
+    #controls button {
+        margin: 2px;
+    }
+
+    .price-section {
+        gap: 20px;
+    }
+
+    .coin {
+        padding: 10px 15px;
+    }
+
+    .coin span {
+        font-size: 18px;
+    }
+
+    .time-buttons,
+    .coin-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .time-buttons button,
+    .coin-buttons button {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* General Link Styling */
+a {
+    color: #00e5ff;
+    text-decoration: underline;
+    transition: all 0.2s ease;
+    padding: 2px 4px;
+    word-break: break-word;
+}
+
+a:hover {
+    color: #ffffff;
+    background-color: rgba(0, 229, 255, 0.1);
+    text-decoration: none;
+    border-radius: 4px;
+}
+.live-price-text {
+  margin-top: 10px;
+  font-size: 22px;
+  color: #00ffcc;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crypto Price Chart</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="nav-links">
+    <a href="/">📊 Price Charts</a>
+    <a href="/wallet">💼 Wallet Tracker</a>
+    <a href="/about">ℹ️ About</a>
+  </div>
+
+  <div class="container">
+    <h1>Crypto Price Chart (Live & Historical)</h1>
+    <div id="live-price" class="live-price-text">Live Price: Loading...</div><!--ADDED-->
+
+    <div id="controls">
+      <label for="coin-select">Select Coin:</label>
+      <select id="coin-select" onchange="updateChart()">
+        <option value="ethereum">Ethereum (ETH)</option>
+        <option value="bitcoin">Bitcoin (BTC)</option>
+        <option value="solana">Solana (SOL)</option>
+        <option value="tether">Tether (USDT)</option>
+        <option value="usd-coin">USD Coin (USDC)</option>
+        <option value="dai">Dai (DAI)</option>
+      </select>
+
+      <button onclick="loadChart('30')" id="btn-30">30 Days</button>
+      <button onclick="loadChart('365')" id="btn-365">1 Year</button>
+      <!--<button onclick="loadChart('max')" id="btn-max">All Time</button>-->
+    </div>
+
+    <div id="status"></div>
+
+    <div id="chart-container">
+      <canvas id="cryptoChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    let chart;
+    let currentCoin = "ethereum";
+    let currentRange = "30";
+
+    function updateChart() {
+      currentCoin = document.getElementById("coin-select").value;
+      loadChart(currentRange); // reload graph
+    }
+
+    function showStatus(message, isError = false) {
+      const statusDiv = document.getElementById("status");
+      statusDiv.innerHTML = `<div class="${isError ? 'error' : 'loading'}">${message}</div>`;
+    }
+
+    function clearStatus() {
+      document.getElementById("status").innerHTML = "";
+    }
+
+    async function loadChart(days = "30") {
+      currentRange = days;
+
+      // Update button active state
+      document.querySelectorAll("#controls button").forEach(btn => btn.classList.remove("active"));
+      document.getElementById(`btn-${days}`).classList.add("active");
+
+      showStatus("Loading chart data...");
+
+      try {
+        // Use Flask API endpoint instead of direct CoinGecko API
+        const url = `/api/chart/${currentCoin}?days=${days}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        // Fetch live price from separate API endpoint (or same response if available)
+        const priceResponse = await fetch(`/api/price/${currentCoin}`);//ADDEED
+        const priceData = await priceResponse.json();
+
+        if (priceData.success) {
+          const price = priceData.price;
+          document.getElementById("live-price").innerText = `Live Price: $${price.toFixed(2)}`;
+        } else {
+          document.getElementById("live-price").innerText = "Live Price: Unavailable";
+        }//ENDED
+
+        
+
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to load chart data');
+        }
+
+        const prices = data.values;
+        const timestamps = data.labels;
+
+        // Convert timestamps to readable dates
+        const labels = timestamps.map(timestamp => new Date(timestamp).toLocaleDateString());
+        const values = prices;
+
+        // Destroy previous chart if exists
+        if (chart) chart.destroy();
+
+        const ctx = document.getElementById("cryptoChart").getContext("2d");
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: `${currentCoin.toUpperCase()} Price (USD)`,
+              data: values,
+              fill: true,
+              borderColor: '#00aaff',
+              backgroundColor: 'rgba(0,170,255,0.1)',
+              tension: 0.2,
+              pointRadius: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: {
+                ticks: {
+                  color: 'white',
+                  maxTicksLimit: 12
+                }
+              },
+              y: {
+                ticks: {
+                  color: 'white'
+                },
+                beginAtZero: false
+              }
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: 'white'
+                }
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false
+              }
+            }
+          }
+        });
+
+        clearStatus();
+      } catch (error) {
+        console.error('Error loading chart:', error);
+        showStatus(`Error: ${error.message}`, true);
+      }
+    }
+
+    // Load default chart
+    window.onload = () => loadChart("30");
+  </script>
+</body>
+
+</html>

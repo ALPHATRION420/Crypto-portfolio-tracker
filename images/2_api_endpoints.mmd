@@ -1,0 +1,39 @@
+%% Crypto Portfolio Tracker - API Endpoints
+graph LR
+    subgraph "Frontend Routes"
+        Home[🏠 / - Main Page]
+        Wallet[💼 /wallet - Wallet Tracker]
+        About[ℹ️ /about - About Page]
+    end
+
+    subgraph "API Endpoints"
+        PriceAPI[💰 /api/price/&lt;coin_id&gt;]
+        ChartAPI[📈 /api/chart/&lt;coin_id&gt;]
+        WalletAPI[💳 /api/wallet/&lt;address&gt;]
+        TxAPI[📋 /api/transactions/&lt;address&gt;]
+        HistoryAPI[📊 /api/eth-price-history]
+        StreamAPI[🔄 /api/stream/transactions/&lt;address&gt;]
+        CoinsAPI[🪙 /api/coins]
+    end
+
+    subgraph "Data Sources"
+        CGPrice[CoinGecko Price API]
+        CGChart[CoinGecko Chart API]
+        ESBalance[Etherscan Balance API]
+        ESTx[Etherscan Transaction API]
+    end
+
+    Home --> PriceAPI
+    Home --> ChartAPI
+    Wallet --> WalletAPI
+    Wallet --> TxAPI
+    Wallet --> HistoryAPI
+    Wallet --> StreamAPI
+    Home --> CoinsAPI
+
+    PriceAPI --> CGPrice
+    ChartAPI --> CGChart
+    WalletAPI --> ESBalance
+    WalletAPI --> CGPrice
+    TxAPI --> ESTx
+    StreamAPI --> ESTx 

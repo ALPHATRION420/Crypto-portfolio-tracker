@@ -1,0 +1,40 @@
+%% Crypto Portfolio Tracker - Technology Stack
+graph TB
+    subgraph "Frontend"
+        HTML[📄 HTML5]
+        CSS[🎨 CSS3]
+        JS[⚡ JavaScript]
+        ChartJS[📊 Chart.js]
+    end
+
+    subgraph "Backend"
+        Python[🐍 Python 3.13]
+        Flask[🌶️ Flask Framework]
+        Requests[📡 Requests Library]
+        Threading[🧵 Threading]
+        Logging[📝 Logging]
+    end
+
+    subgraph "External Dependencies"
+        DotEnv[🔐 python-dotenv]
+        Pandas[📊 Pandas]
+        Web3[🔗 Web3.py]
+    end
+
+    subgraph "External APIs"
+        CoinGeckoAPI[🪙 CoinGecko API]
+        EtherscanAPI[🔗 Etherscan API]
+    end
+
+    HTML --> CSS
+    CSS --> JS
+    JS --> ChartJS
+    Python --> Flask
+    Flask --> Requests
+    Flask --> Threading
+    Flask --> Logging
+    Flask --> DotEnv
+    Flask --> Pandas
+    Flask --> Web3
+    Requests --> CoinGeckoAPI
+    Requests --> EtherscanAPI 

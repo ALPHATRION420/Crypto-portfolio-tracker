@@ -1,0 +1,43 @@
+%% Crypto Portfolio Tracker - Component Relationships
+graph TB
+    subgraph "Core Application"
+        App[🏗️ Flask Application]
+        Routes[🛣️ Route Handlers]
+        Services[🔧 Business Logic]
+        Utils[🛠️ Utility Functions]
+    end
+
+    subgraph "Data Layer"
+        Crypto[crypt.py]
+        PriceHistory[price_history.py]
+        WalletStore[wallet_store.py]
+    end
+
+    subgraph "Templates"
+        Main[main.html]
+        Wallet[wallet.html]
+        About[about.html]
+        Index[index.html]
+    end
+
+    subgraph "Static Assets"
+        CSS[style.css]
+        JS[main.js]
+        Icons[icon.png]
+    end
+
+    App --> Routes
+    Routes --> Services
+    Services --> Utils
+    Services --> Crypto
+    Services --> PriceHistory
+    Services --> WalletStore
+    Routes --> Main
+    Routes --> Wallet
+    Routes --> About
+    Routes --> Index
+    Main --> CSS
+    Main --> JS
+    Wallet --> CSS
+    Wallet --> JS
+    About --> CSS 

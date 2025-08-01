@@ -1,0 +1,25 @@
+%% Crypto Portfolio Tracker - Architecture Overview
+graph TB
+    subgraph "Frontend (Client)"
+        UI[📱 User Interface]
+        UI --> Charts[📊 Chart.js]
+        UI --> SSE[🔄 SSE Client]
+    end
+
+    subgraph "Backend (Flask Server)"
+        Flask[🐍 Flask App]
+        Flask --> API[🔗 API Endpoints]
+        Flask --> Logger[📝 Logging System]
+        Flask --> Monitor[👁️ Transaction Monitor]
+    end
+
+    subgraph "External APIs"
+        CoinGecko[🪙 CoinGecko API]
+        Etherscan[🔗 Etherscan API]
+    end
+
+    UI --> Flask
+    Flask --> CoinGecko
+    Flask --> Etherscan
+    Flask --> SSE
+    SSE --> UI 

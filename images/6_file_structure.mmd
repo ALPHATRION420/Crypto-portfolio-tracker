@@ -1,0 +1,43 @@
+%% Crypto Portfolio Tracker - File Structure
+graph TB
+    subgraph "Project Root"
+        AppPy[app.py]
+        Crypt[crypt.py]
+        PriceHist[price_history.py]
+        WalletStore[wallet_store.py]
+        Requirements[requirements.txt]
+        EnvFile[.env]
+    end
+
+    subgraph "Templates"
+        MainHtml[main.html]
+        WalletHtml[wallet.html]
+        AboutHtml[about.html]
+        IndexHtml[index.html]
+    end
+
+    subgraph "Static"
+        CSS[css/style.css]
+        JS[js/main.js]
+        Icon[icon.png]
+    end
+
+    subgraph "Logs"
+        AppLog[app.log]
+        TestLog[test.log]
+    end
+
+    AppPy --> Crypt
+    AppPy --> PriceHist
+    AppPy --> WalletStore
+    AppPy --> MainHtml
+    AppPy --> WalletHtml
+    AppPy --> AboutHtml
+    AppPy --> IndexHtml
+    MainHtml --> CSS
+    MainHtml --> JS
+    WalletHtml --> CSS
+    WalletHtml --> JS
+    AboutHtml --> CSS
+    AppPy --> AppLog
+    EnvFile --> AppPy 

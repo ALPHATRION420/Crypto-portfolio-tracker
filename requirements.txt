@@ -1,0 +1,8 @@
+Flask==2.3.3
+requests==2.31.0
+pandas
+web3==6.11.3
+reportlab==4.0.4
+matplotlib
+python-dotenv==1.0.0
+//sample address= 0xe688b84b23f322a994A53dbF8E15FA82CDB71127

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ETH Wallet Tracker</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="nav-links">
+    <a href="/">📊 Price Charts</a>
+    <a href="/wallet">💼 Wallet Tracker</a>
+    <a href="/about">ℹ️ About</a>
+  </div>
+
+  <h1>Ethereum Wallet Tracker</h1>
+
+  <div class="container">
+    <div class="wallet-section">
+      <input type="text" id="walletAddress" placeholder="Enter your Ethereum wallet address" />
+      <button onclick="trackWallet()">Track</button>
+    </div>
+
+    <div id="status"></div>
+    <div id="streamStatus" class="stream-status"></div>
+
+    <div class="wallet-info" id="walletInfo"></div>
+
+    <div class="chart-container">
+      <canvas id="priceChart"></canvas>
+      <div id="recommendationBox" class="recommendation"></div>
+    </div>
+
+    <div class="transactions">
+      <h3>Recent Transactions: <span id="txCount">0</span></h3>
+      <table id="txTable">
+        <thead>
+          <tr>
+            <th>Hash</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Value (ETH)</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let priceChart = null;
+    let eventSource = null;
+    let currentAddress = null;
+    let transactionCount = 0;
+
+    function showStatus(message, isError = false) {
+      const statusDiv = document.getElementById("status");
+      statusDiv.innerHTML = `<div class="${isError ? 'error' : 'loading'}">${message}</div>`;
+    }
+
+    function clearStatus() {
+      document.getElementById("status").innerHTML = "";
+    }
+
+    function updateStreamStatus(connected, message = '') {
+      const statusDiv = document.getElementById("streamStatus");
+      if (connected) {
+        statusDiv.innerHTML = `<div class="stream-connected">🟢 Real-time streaming active: ${message}</div>`;
+      } else {
+        statusDiv.innerHTML = `<div class="stream-disconnected">🔴 Real-time streaming disconnected</div>`;
+      }
+    }
+
+    function addTransactionToTable(transaction, isNew = false) {
+      const tbody = document.querySelector("#txTable tbody");
+      const row = document.createElement('tr');
+      row.className = 'transaction-row';
+      if (isNew) {
+        row.classList.add('new-transaction');
+      }
+
+      const timestamp = new Date(parseInt(transaction.timestamp) * 1000);
+      const timeString = timestamp.toLocaleString();
+
+      row.innerHTML = `
+        <td><a href="https://etherscan.io/tx/${transaction.hash}" target="_blank">${transaction.hash.slice(0, 10)}...</a></td>
+        <td>${transaction.from.slice(0, 8)}...</td>
+        <td>${transaction.to.slice(0, 8)}...</td>
+        <td>${transaction.value.toFixed(4)}</td>
+        <td>${timeString}</td>
+      `;
+
+      // Insert at the top for new transactions
+      if (isNew) {
+        tbody.insertBefore(row, tbody.firstChild);
+        transactionCount++;
+        document.getElementById("txCount").textContent = transactionCount;
+
+        // Remove old rows if more than 20
+        while (tbody.children.length > 20) {
+          tbody.removeChild(tbody.lastChild);
+        }
+      } else {
+        tbody.appendChild(row);
+        transactionCount++;
+        document.getElementById("txCount").textContent = transactionCount;
+      }
+    }
+
+    function startRealTimeStreaming(address) {
+      // Close existing connection
+      if (eventSource) {
+        eventSource.close();
+      }
+
+      // Start new SSE connection
+      eventSource = new EventSource(`/api/stream/transactions/${address}`);
+
+      eventSource.onopen = function (event) {
+        updateStreamStatus(true, 'Connected to server');
+      };
+
+      eventSource.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+
+        switch (data.type) {
+          case 'connected':
+            updateStreamStatus(true, `Monitoring ${address.slice(0, 8)}...`);
+            break;
+
+          case 'heartbeat':
+            updateStreamStatus(true, `Last update: ${new Date().toLocaleTimeString()}`);
+            break;
+
+          case 'new_transaction':
+            addTransactionToTable(data.transaction, true);
+            // Play notification sound or show notification
+            if (Notification.permission === 'granted') {
+              new Notification('New Transaction', {
+                body: `New transaction detected: ${data.transaction.value.toFixed(4)} ETH`,
+                icon: '/static/icon.png'
+              });
+            }
+            break;
+        }
+      };
+
+      eventSource.onerror = function (event) {
+        updateStreamStatus(false, 'Connection error');
+        // Try to reconnect after 5 seconds
+        setTimeout(() => {
+          if (currentAddress) {
+            startRealTimeStreaming(currentAddress);
+          }
+        }, 5000);
+      };
+    }
+
+    async function trackWallet() {
+      const address = document.getElementById("walletAddress").value.trim();
+      if (!address) {
+        showStatus("Please enter a valid wallet address", true);
+        return;
+      }
+
+      currentAddress = address;
+      showStatus("Loading wallet data...");
+
+      try {
+        // Get wallet data from our Flask API
+        const walletResponse = await fetch(`/api/wallet/${address}`);
+        // console.log('Wallet API response status:', walletResponse.status);
+
+        if (!walletResponse.ok) {
+          console.error('Wallet API HTTP error:', walletResponse.status, walletResponse.statusText);
+          throw new Error(`HTTP ${walletResponse.status}: ${walletResponse.statusText}`);
+        }
+
+        const walletData = await walletResponse.json();
+        // console.log('Wallet API response data:', walletData);
+
+        if (!walletData.success) {
+          console.error('Wallet API error:', walletData);
+          throw new Error(walletData.error || 'Failed to load wallet data');
+        }
+
+        const { eth_balance, eth_price, total_value } = walletData;
+
+        // Display wallet info
+        document.getElementById("walletInfo").innerHTML = `
+          <h3>Wallet Overview</h3>
+          <p><strong>ETH Balance:</strong> ${eth_balance.toFixed(5)} ETH</p>
+          <p><strong>ETH Price (USD):</strong> $${eth_price.toFixed(2)}</p>
+          <p><strong>Total Value:</strong> $${total_value.toFixed(2)}</p>
+        `;
+
+        // Get initial transactions from our Flask API
+        const txResponse = await fetch(`/api/transactions/${address}`);
+        // console.log('Transactions API response status:', txResponse.status);
+
+        if (!txResponse.ok) {
+          console.error('Transactions API HTTP error:', txResponse.status, txResponse.statusText);
+          throw new Error(`HTTP ${txResponse.status}: ${txResponse.statusText}`);
+        }
+
+        const txData = await txResponse.json();
+        // console.log('Transactions API response data:', txData);
+
+        if (txData.success) {
+          const transactions = txData.transactions;
+          const tbody = document.querySelector("#txTable tbody");
+          tbody.innerHTML = '';
+          transactionCount = 0;
+
+          transactions.forEach(tx => {
+            addTransactionToTable({
+              hash: tx.hash,
+              from: tx.from,
+              to: tx.to,
+              value: parseFloat(tx.value) / 1e18,
+              timestamp: tx.timeStamp
+            });
+          });
+        } else {
+          document.querySelector("#txTable tbody").innerHTML =
+            '<tr><td colspan="5" style="text-align: center;">No transactions found or error loading transactions</td></tr>';
+        }
+
+        // Get price history from our Flask API
+        const historyResponse = await fetch('/api/eth-price-history');
+        // console.log('Price history API response status:', historyResponse.status);
+
+        if (!historyResponse.ok) {
+          console.error('Price history API HTTP error:', historyResponse.status, historyResponse.statusText);
+          throw new Error(`HTTP ${historyResponse.status}: ${historyResponse.statusText}`);
+        }
+
+        const historyData = await historyResponse.json();
+        // console.log('Price history API response data:', historyData);
+
+        if (historyData.success) {
+          const prices = historyData.prices;
+          const times = prices.map(p => new Date(p[0]).toLocaleTimeString());
+          const priceValues = prices.map(p => p[1]);
+
+          // Destroy previous chart if exists
+          if (priceChart) priceChart.destroy();
+
+          priceChart = new Chart(document.getElementById("priceChart"), {
+            type: "line",
+            data: {
+              labels: times,
+              datasets: [{
+                label: "ETH Price (USD)",
+                data: priceValues,
+                borderColor: "#00e5ff",
+                backgroundColor: "rgba(0, 229, 255, 0.2)",
+                fill: true,
+                tension: 0.4
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { labels: { color: "#e0f7fa" } }
+              },
+              scales: {
+                x: { ticks: { color: "#b2ebf2" } },
+                y: { ticks: { color: "#b2ebf2" } }
+              }
+            }
+          });
+
+          // Generate market context information
+          const currentPrice = priceValues[priceValues.length - 1];
+          const startPrice = priceValues[0];
+          const priceChange = currentPrice - startPrice;
+          const priceChangePercent = ((priceChange / startPrice) * 100).toFixed(2);
+          const isPositive = priceChange >= 0;
+
+          const recBox = document.getElementById("recommendationBox");
+
+          // Calculate volatility (standard deviation of price changes)
+          const priceChanges = [];
+          for (let i = 1; i < priceValues.length; i++) {
+            priceChanges.push(Math.abs(priceValues[i] - priceValues[i - 1]));
+          }
+          const avgChange = priceChanges.reduce((a, b) => a + b, 0) / priceChanges.length;
+          const volatility = avgChange > 10 ? "High" : avgChange > 5 ? "Medium" : "Low";
+
+          recBox.innerHTML = `
+            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">
+              <span style="color: ${isPositive ? '#00e676' : '#ff1744'}">
+                ETH ${isPositive ? '+' : ''}${priceChangePercent}% (${isPositive ? '+' : ''}$${priceChange.toFixed(2)})
+              </span>
+            </div>
+            <div style="font-size: 0.9rem; opacity: 0.8;">
+              Market Volatility: ${volatility} | 24h Range: $${Math.min(...priceValues).toFixed(2)} - $${Math.max(...priceValues).toFixed(2)}
+            </div>
+          `;
+          recBox.className = "recommendation market-context";
+        } else {
+          // log error
+          console.error('Price history API error:', historyData);
+          throw new Error(`Failed to load price history: ${historyData.error || 'Unknown error'}`);
+        }
+
+        // Start real-time streaming
+        startRealTimeStreaming(address);
+
+        clearStatus();
+      } catch (error) {
+        console.error('Error tracking wallet:', error);
+        showStatus(`Error: ${error.message}`, true);
+      }
+    }
+
+    // Request notification permission
+    if ('Notification' in window) {
+      Notification.requestPermission();
+    }
+
+    // Allow Enter key to trigger tracking
+    document.getElementById("walletAddress").addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        trackWallet();
+      }
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function () {
+      if (eventSource) {
+        eventSource.close();
+      }
+    });
+  </script>
+</body>
+
+</html>

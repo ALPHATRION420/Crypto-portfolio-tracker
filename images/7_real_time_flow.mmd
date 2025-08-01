@@ -1,0 +1,41 @@
+%% Crypto Portfolio Tracker - Real-time Data Flow
+graph LR
+    subgraph "User Actions"
+        EnterAddress[Enter Wallet Address]
+        ViewCharts[View Price Charts]
+        MonitorTx[Monitor Transactions]
+    end
+
+    subgraph "Frontend Processing"
+        ValidateInput[Validate Input]
+        SendRequest[Send API Request]
+        UpdateUI[Update UI]
+        HandleSSE[Handle SSE Events]
+    end
+
+    subgraph "Backend Processing"
+        RouteHandler[Route Handler]
+        BusinessLogic[Business Logic]
+        APIRequest[External API Request]
+        DataProcessing[Data Processing]
+        SSEStream[SSE Stream]
+    end
+
+    subgraph "External Services"
+        CoinGeckoAPI[CoinGecko API]
+        EtherscanAPI[Etherscan API]
+    end
+
+    EnterAddress --> ValidateInput
+    ValidateInput --> SendRequest
+    SendRequest --> RouteHandler
+    RouteHandler --> BusinessLogic
+    BusinessLogic --> APIRequest
+    APIRequest --> CoinGeckoAPI
+    APIRequest --> EtherscanAPI
+    CoinGeckoAPI --> DataProcessing
+    EtherscanAPI --> DataProcessing
+    DataProcessing --> UpdateUI
+    DataProcessing --> SSEStream
+    SSEStream --> HandleSSE
+    HandleSSE --> UpdateUI 

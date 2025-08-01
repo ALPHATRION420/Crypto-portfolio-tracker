@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Portfolio Tracker</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+  <div class="nav-links">
+    <a href="/">📊 Price Charts</a>
+    <a href="/wallet">💼 Wallet Tracker</a>
+    <a href="/about">ℹ️ About</a>
+  </div>
+
+  <div class="container">
+    <h1>Crypto Portfolio Tracker</h1>
+
+    <!-- Wallet Manager -->
+    <div class="wallet-section">
+      <input id="walletInput" placeholder="Enter new wallet address">
+      <button onclick="addWallet()">Add Wallet</button>
+      <select id="walletDropdown" onchange="loadWallet()"></select>
+      <button onclick="deleteWallet()">Delete Selected</button>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button onclick="showTab('overview')">Overview</button>
+      <button onclick="showTab('history')">History</button>
+    </div>
+
+    <!-- Overview Tab -->
+    <div id="overview" class="tab active">
+      <h2>ETH Balance: <span id="eth"></span></h2>
+      <table id="tokenTable">
+        <thead>
+          <tr>
+            <th>Token</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <canvas id="chartCanvas"></canvas>
+    </div>
+
+    <!-- History Tab -->
+    <div id="history" class="tab">
+      <h2>Price History (30 Days)</h2>
+      <canvas id="historyChart"></canvas>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+
+</html>

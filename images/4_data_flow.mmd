@@ -1,0 +1,42 @@
+%% Crypto Portfolio Tracker - Data Flow Architecture
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant B as Backend
+    participant CG as CoinGecko
+    participant ES as Etherscan
+    participant SSE as SSE Stream
+
+    %% Wallet Tracking Flow
+    U->>F: Enter wallet address
+    F->>B: GET /api/wallet/{address}
+    B->>ES: GET balance
+    B->>CG: GET ETH price
+    ES-->>B: Balance data
+    CG-->>B: Price data
+    B-->>F: Wallet info + value
+    F->>B: GET /api/transactions/{address}
+    B->>ES: GET transactions
+    ES-->>B: Transaction data
+    B-->>F: Transaction list
+
+    %% Real-time Streaming
+    F->>B: GET /api/stream/transactions/{address}
+    B->>SSE: Start monitoring
+    loop Every 5 seconds
+        B->>ES: Check for new transactions
+        ES-->>B: Latest transaction
+        alt New transaction found
+            B->>SSE: Send transaction data
+            SSE->>F: Real-time update
+            F->>U: Display notification
+        end
+    end
+
+    %% Price Chart Flow
+    U->>F: Select coin/timeframe
+    F->>B: GET /api/chart/{coin_id}
+    B->>CG: GET price history
+    CG-->>B: Historical data
+    B-->>F: Chart data
+    F->>U: Display chart 
